@@ -42,7 +42,7 @@ class Application
      */
     public function route($path, $controller)
     {
-        $this->routes[$path] = $controller;    
+        $this->routes[$path] = $controller;
         return $this;
     }
 
@@ -50,15 +50,25 @@ class Application
     {
         $uri = strtok($_SERVER["REQUEST_URI"], '?');
         foreach ($this->routes as $route => $call) {
-            if ($uri == $route) {
+            $route = str_replace('/', '\/', $route);  // Escapamos los slashes para la regex.
+            $route = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<$1>$2)', $route);  // Convertimos la ruta a una expresión regular.
+            
+            if (preg_match('/^' . $route . '$/', $uri, $matches)) {
                 $parts = explode('::', $call);
                 $controllerClass = $parts[0];
                 $controllerAction = $parts[1];
-
+                
                 $class = new $controllerClass($this);
-                echo $class->$controllerAction();
+                
+                // Comprobamos si la clave "id" existe en $matches
+                if(isset($matches['id'])) {
+                    echo $class->$controllerAction($matches['id']);  // Aquí estamos pasando el id capturado.
+                } else {
+                    echo $class->$controllerAction();
+                }
                 return;
             }
         }
     }
+
 }

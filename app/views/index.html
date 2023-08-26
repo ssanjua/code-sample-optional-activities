@@ -2,14 +2,73 @@
 <ul>
 {% for post in posts %}
     <li>
-        {{ post.title }} ~ {{ post.body }}
+        <strong>Title: </strong>{{ post.title }}<br> 
+        <strong>Content: </strong> {{ post.body }}<br>
+        <strong>Autor: </strong> {{ post.author }}<br>
+        <a href="#" class="edit-link" data-id="{{ post.id }}">Edit 📝 </a>
+        <a href="#" class="delete-link" data-id="{{ post.id }}">Delete 🗑️</a>
+
+        <!-- edit form (default: hidden) -->
+        <div class="edit-form" id="edit-form-{{ post.id }}" style="display:none;">
+            <form method="post" action="/edit/{{ post.id }}">
+                <input type="text" name="title" value="{{ post.title }}">
+                <textarea name="body">{{ post.body }}</textarea>
+                <input type="text" name="author" value="{{ post.author }}">
+                <input type="submit" value="Update">
+                <button type="button" class="cancel-edit">Cancel</button>
+            </form>
+        </div>
     </li>
 {% endfor %}
-</ul>
 
+{% if error %}
+    <div style="color: red;">{{ error }}</div>
+{% endif %}
+
+</ul>
 <h2>Add Post</h2>
 <form action="/add" method="POST">
     <input name="title" placeholder="Title" />
-    <input name="body"  placeholder="Body" />
+    <input name="body" placeholder="Body" />
+    <input name="author" placeholder="Author" /> <!-- add author -->
     <button type="submit">Add Post</button>
 </form>
+
+<!-- simple JavaScript to handle the edit and delete feature -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editLinks = document.querySelectorAll('.edit-link');
+        editLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const postId = event.target.getAttribute('data-id');
+                const editForm = document.getElementById(`edit-form-${postId}`);
+                if(editForm.style.display === 'none' || editForm.style.display === '') {
+                    editForm.style.display = 'block';
+                } else {
+                    editForm.style.display = 'none';
+                }
+            });
+        });
+    
+        const cancelButtons = document.querySelectorAll('.cancel-edit');
+        cancelButtons.forEach(btn => {
+            btn.addEventListener('click', function(event) {
+                event.preventDefault();
+                const editForm = event.target.closest('.edit-form');
+                editForm.style.display = 'none';
+            });
+        });
+    });
+
+    const deleteLinks = document.querySelectorAll('.delete-link');
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const postId = event.target.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this post?')) {
+                window.location.href = `/delete/${postId}`;
+            }
+        });
+    });
+</script>
