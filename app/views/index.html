@@ -1,0 +1,15 @@
+<h1>Posts</h1>
+<ul>
+{% for post in posts %}
+    <li>
+        {{ post.title }} ~ {{ post.body }}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Add Post</h2>
+<form action="/add" method="POST">
+    <input name="title" placeholder="Title" />
+    <input name="body"  placeholder="Body" />
+    <button type="submit">Add Post</button>
+</form>
