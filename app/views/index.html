@@ -1,14 +1,20 @@
+<!-- Display a heading for the list of posts -->
 <h1>Posts</h1>
+
+<!-- List all available posts -->
 <ul>
 {% for post in posts %}
     <li>
+        <!-- Display post details -->
         <strong>Title: </strong>{{ post.title }}<br> 
         <strong>Content: </strong> {{ post.body }}<br>
         <strong>Autor: </strong> {{ post.author }}<br>
+        
+        <!-- Links for editing and deleting a post -->
         <a href="#" class="edit-link" data-id="{{ post.id }}">Edit 📝 </a>
         <a href="#" class="delete-link" data-id="{{ post.id }}">Delete 🗑️</a>
 
-        <!-- edit form (default: hidden) -->
+        <!-- Hidden edit form for each post -->
         <div class="edit-form" id="edit-form-{{ post.id }}" style="display:none;">
             <form method="post" action="/edit/{{ post.id }}">
                 <input type="text" name="title" value="{{ post.title }}">
@@ -20,12 +26,9 @@
         </div>
     </li>
 {% endfor %}
-
-{% if error %}
-    <div style="color: red;">{{ error }}</div>
-{% endif %}
-
 </ul>
+
+<!-- Form to add a new post -->
 <h2>Add Post</h2>
 <form action="/add" method="POST">
     <input name="title" placeholder="Title" />
@@ -34,7 +37,7 @@
     <button type="submit">Add Post</button>
 </form>
 
-<!-- simple JavaScript to handle the edit and delete feature -->
+<!-- JavaScript to manage display of edit forms and handle delete confirmation -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const editLinks = document.querySelectorAll('.edit-link');
@@ -50,7 +53,8 @@
                 }
             });
         });
-    
+        
+        // Hide edit form when cancel button is clicked
         const cancelButtons = document.querySelectorAll('.cancel-edit');
         cancelButtons.forEach(btn => {
             btn.addEventListener('click', function(event) {
@@ -61,6 +65,7 @@
         });
     });
 
+    // Confirm deletion when delete link is clicked
     const deleteLinks = document.querySelectorAll('.delete-link');
     deleteLinks.forEach(link => {
         link.addEventListener('click', function(event) {
